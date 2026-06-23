@@ -1,0 +1,42 @@
+# Terraform state files — NEVER commit these.
+# State files contain secrets and resource IDs in plaintext.
+*.tfstate
+*.tfstate.backup
+*.tfstate.*.backup
+
+# Terraform plan output — contains sensitive values
+*.tfplan
+
+# Local variable overrides — use for personal dev overrides, not CI
+*.tfvars.local
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Terraform working directory
+.terraform/
+.terraform.lock.hcl  # DO commit this, it pins provider versions for reproducibility
+                     # Remove this line so .terraform.lock.hcl IS tracked
+
+# Crash logs
+crash.log
+crash.*.log
+
+# Sensitive variable files
+# terraform.tfvars can contain secrets if you're not careful!
+# We commit ours because they only contain non-sensitive IDs,
+# but this is worth auditing before each commit.
+# Uncomment the next line if you ever put secrets in tfvars:
+# terraform.tfvars
+
+# Editor artifacts
+.DS_Store
+*.swp
+*.swo
+.idea/
+.vscode/
+
+# Generated kubeconfig: don't commit this
+kubeconfig
+kubeconfig-*
