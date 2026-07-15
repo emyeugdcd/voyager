@@ -22,22 +22,26 @@ spec:
             - containerPort: {{ .Values.service.port }}
               name: http
           env:
-            - name: PORT
-              value: "{{ .Values.service.port }}"
-            - name: DB_HOST
+            - name: SERVER_PORT
+              value: ":{{ .Values.service.port }}"
+            - name: POSTGRES_SERVER_HOST
               value: "{{ .Values.database.host }}"
-            - name: DB_NAME
+            - name: POSTGRES_DB
               value: "{{ .Values.database.name }}"
-            - name: DB_USER
+            - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
                   name: backend-db-credentials
                   key: db-username
-            - name: DB_PASSWORD
+            - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: backend-db-credentials
                   key: db-password
+            - name: CLIENT_URL
+              value: "http://localhost:3000"
+            - name: RUN_MIGRATION
+              value: "true"
           resources:
             limits:
               cpu: 200m

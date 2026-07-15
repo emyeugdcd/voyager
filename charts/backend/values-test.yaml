@@ -19,5 +19,5 @@ ingress:
 
 database:
   # Hostname of the test PostgreSQL server
-  host: "voyager-test-db.postgres.database.azure.com"
+  host: "voyager-test-pg.postgres.database.azure.com"
   name: "sampleapp"

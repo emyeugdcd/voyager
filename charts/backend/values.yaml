@@ -27,7 +27,7 @@ ingress:
 
 database:
   # The FQDN of the PostgreSQL server (outputted as db_fqdn by Terraform)
-  host: "voyager-test-db.postgres.database.azure.com"
+  host: "voyager-test-pg.postgres.database.azure.com"
   name: "sampleapp"
 
 # Pin backend pods to main pool
