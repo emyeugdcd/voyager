@@ -74,15 +74,7 @@ module "networking" {
   subnet_db_cidr     = "10.1.5.0/24" # Added for private PostgreSQL integration
 }
 
-module "jumphost" {
-  source              = "../../modules/jumphost"
-  resource_group_name = azurerm_resource_group.test.name
-  location            = var.location
-  project             = var.project
-  environment         = var.environment
-  subnet_tools_id     = module.networking.subnet_tools_id
-  ssh_public_key      = var.ssh_public_key
-}
+# Jumphost VM removed to avoid regional core limit. Access is via public AKS API server.
 
 module "aks" {
   source              = "../../modules/aks"
@@ -96,8 +88,9 @@ module "aks" {
   acr_id                = data.terraform_remote_state.shared.outputs.acr_id
   enable_ha             = false # Test does not require node-level AZ HA
   node_count_main       = 2
-  node_count_tools      = 1
-  node_count_monitoring = 1
+  node_count_tools      = 0
+  node_count_monitoring = 0
+  private_cluster_enabled = false
 }
 
 # -----------------------------------------------------------------------------
@@ -187,4 +180,74 @@ resource "azurerm_federated_identity_credential" "external_dns" {
   issuer              = module.aks.oidc_issuer_url
   parent_id           = azurerm_user_assigned_identity.external_dns.id
   subject             = "system:serviceaccount:external-dns:external-dns-sa"
+}
+
+# -----------------------------------------------------------------------------
+# LOKI OBSERVABILITY STORAGE & IDENTITY (Phase 7)
+# -----------------------------------------------------------------------------
+
+resource "random_id" "loki_suffix" {
+  keepers = {
+    location = var.location
+  }
+  byte_length = 4
+}
+
+# Azure Storage Account for Loki logs
+resource "azurerm_storage_account" "loki" {
+  name                     = "voyagerloki${var.environment}${random_id.loki_suffix.hex}"
+  resource_group_name      = azurerm_resource_group.test.name
+  location                 = var.location
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+}
+
+# Container for Loki logs
+resource "azurerm_storage_container" "loki" {
+  name                  = "loki-logs"
+  storage_account_name  = azurerm_storage_account.loki.name
+  container_access_type = "private"
+}
+
+# Lifecycle policy: delete logs older than 365 days
+resource "azurerm_storage_management_policy" "loki" {
+  storage_account_id = azurerm_storage_account.loki.id
+
+  rule {
+    name    = "loki-logs-retention"
+    enabled = true
+    filters {
+      prefix_match = ["loki-logs/"]
+      blob_types   = ["blockBlob"]
+    }
+    actions {
+      base_blob {
+        delete_after_days_since_modification_greater_than = 365
+      }
+    }
+  }
+}
+
+# Managed Identity for Loki
+resource "azurerm_user_assigned_identity" "loki" {
+  name                = "${var.project}-${var.environment}-loki-identity"
+  location            = var.location
+  resource_group_name = azurerm_resource_group.test.name
+}
+
+# Grant Storage Blob Data Contributor role to Loki identity over storage scope
+resource "azurerm_role_assignment" "loki_storage" {
+  scope                = azurerm_storage_account.loki.id
+  role_definition_name = "Storage Blob Data Contributor"
+  principal_id         = azurerm_user_assigned_identity.loki.principal_id
+}
+
+# Link Loki identity to AKS service account via OIDC federation
+resource "azurerm_federated_identity_credential" "loki" {
+  name                = "${var.project}-${var.environment}-loki-federated"
+  resource_group_name = azurerm_resource_group.test.name
+  audience            = ["api://AzureADTokenExchange"]
+  issuer              = module.aks.oidc_issuer_url
+  parent_id           = azurerm_user_assigned_identity.loki.id
+  subject             = "system:serviceaccount:monitoring:loki-sa"
 }

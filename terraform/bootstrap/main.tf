@@ -15,7 +15,7 @@ provider "azurerm" {
 }
 
 variable "location" {
-    default = "northeurope"
+    default = "italynorth"
 }
 
 variable "project" {

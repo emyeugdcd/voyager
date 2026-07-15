@@ -1,0 +1,27 @@
+# Grafana sub-chart values nested under kube-prometheus-stack
+grafana:
+  enabled: true
+  
+  nodeSelector: {}
+  tolerations: []
+
+  persistence:
+    enabled: true
+    storageClassName: "default"
+    size: 10Gi
+
+  # Automated data source injection for Prometheus and Loki
+  additionalDataSources:
+    - name: Prometheus
+      type: prometheus
+      access: proxy
+      url: http://kube-prometheus-stack-prometheus.monitoring.svc:9090
+      isDefault: true
+      jsonData:
+        timeInterval: 30s
+    - name: Loki
+      type: loki
+      access: proxy
+      url: http://loki-gateway.monitoring.svc:80
+      jsonData:
+        maxLines: 1000

@@ -2,7 +2,7 @@
 # MODULE: networking
 # =============================================================================
 # This module provisions the entire network layer for one environment (test
-# or prod). We'll call it twice — once per environment — with different
+# or prod). We'll call it twice: once per environment with different
 # CIDR ranges so the two networks never overlap.
 #
 # Why does overlap matter? In the future, if we peer the test and prod VNets
@@ -111,6 +111,14 @@ resource "azurerm_subnet" "pods" {
   resource_group_name  = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.main.name
   address_prefixes     = [var.subnet_pod_cidr]
+
+  delegation {
+    name = "aks-delegation"
+    service_delegation {
+      name    = "Microsoft.ContainerService/managedClusters"
+      actions = ["Microsoft.Network/virtualNetworks/subnets/join/action"]
+    }
+  }
 }
 
 resource "azurerm_subnet" "tools" {

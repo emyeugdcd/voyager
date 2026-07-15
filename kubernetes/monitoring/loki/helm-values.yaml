@@ -1,0 +1,47 @@
+loki:
+  auth_enabled: false
+  
+  commonConfig:
+    replication_factor: 1
+
+  # Storage configuration for Azure Blob Storage using Workload Identity
+  storage:
+    type: azure
+    azure:
+      container_name: loki-logs
+      account_name: "voyagerlokitestd0455856"
+      # Set to true to authenticate using federated credentials (Workload Identity token exchange)
+      use_federated_token: true
+
+  schemaConfig:
+    configs:
+      - from: "2024-01-01"
+        store: tsdb
+        object_store: azure
+        schema: v13
+        index:
+          prefix: index_
+          period: 24h
+
+serviceAccount:
+  create: true
+  name: loki-sa
+  annotations:
+    azure.workload.identity/client-id: "80e58915-3e1b-4683-a5a9-902dcbe5095e"
+
+# Ensure all component pods run on the monitoring pool
+write:
+  nodeSelector: {}
+  tolerations: []
+
+read:
+  nodeSelector: {}
+  tolerations: []
+
+backend:
+  nodeSelector: {}
+  tolerations: []
+
+gateway:
+  nodeSelector: {}
+  tolerations: []

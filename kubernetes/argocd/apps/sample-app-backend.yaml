@@ -8,7 +8,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'https://gitlab.com/lducanh1991/voyager.git' # REPLACE with your actual repository URL
+    repoURL: 'https://gitlab.com/emyeugdcd/voyager' 
     targetRevision: HEAD
     path: charts/backend
     helm:

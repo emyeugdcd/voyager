@@ -14,7 +14,7 @@ spec:
       helm:
         valueFiles:
           - $values/kubernetes/external-dns/values-test.yaml
-    - repoURL: 'https://gitlab.com/lducanh1991/voyager.git' # REPLACE with your actual repository URL
+    - repoURL: 'https://gitlab.com/emyeugdcd/voyager' 
       ref: values
   destination:
     server: 'https://kubernetes.default.svc'

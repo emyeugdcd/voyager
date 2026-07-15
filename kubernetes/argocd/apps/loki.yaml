@@ -1,19 +1,24 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: root-app
+  name: loki
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
-  source:
-    repoURL: 'https://gitlab.com/emyeugdcd/voyager'
-    targetRevision: HEAD
-    path: kubernetes/argocd/apps
+  sources:
+    - repoURL: 'https://grafana.github.io/helm-charts'
+      chart: loki
+      targetRevision: 6.6.0
+      helm:
+        valueFiles:
+          - $values/kubernetes/monitoring/loki/helm-values.yaml
+    - repoURL: 'https://gitlab.com/emyeugdcd/voyager'
+      ref: values
   destination:
     server: 'https://kubernetes.default.svc'
-    namespace: argocd
+    namespace: monitoring
   syncPolicy:
     automated:
       prune: true

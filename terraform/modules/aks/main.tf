@@ -15,6 +15,10 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "~> 3.110"
     }
+    time = {
+      source  = "hashicorp/time"
+      version = "~> 0.9"
+    }
   }
 }
 
@@ -72,8 +76,8 @@ resource "azurerm_kubernetes_cluster" "main" {
   kubernetes_version  = var.kubernetes_version
 
   # Private Cluster: API Server is accessible only internally
-  private_cluster_enabled = true
-  private_dns_zone_id     = "System"
+  private_cluster_enabled = var.private_cluster_enabled
+  private_dns_zone_id     = var.private_cluster_enabled ? "System" : null
 
   # Modern authentication
   oidc_issuer_enabled       = true
@@ -82,7 +86,7 @@ resource "azurerm_kubernetes_cluster" "main" {
   default_node_pool {
     name            = "main"
     node_count      = var.node_count_main
-    vm_size         = var.vm_size
+    vm_size         = var.vm_size_main
     vnet_subnet_id  = var.subnet_nodes_id
     pod_subnet_id   = var.subnet_pods_id
     os_disk_size_gb = 50
@@ -136,11 +140,22 @@ resource "azurerm_kubernetes_cluster" "main" {
     ignore_changes = [kubernetes_version]
   }
 
-  # Ensure role assignments are applied before cluster tries to provision subnets
+  # Ensure role assignments and identity propagation have time to replicate in AD
   depends_on = [
+    azurerm_role_assignment.aks_network_contributor_nodes,
+    azurerm_role_assignment.aks_network_contributor_pods,
+    time_sleep.wait_30_seconds
+  ]
+}
+
+# 30-second delay to guarantee managed identity propagation across AD endpoints
+resource "time_sleep" "wait_30_seconds" {
+  depends_on = [
+    azurerm_user_assigned_identity.aks_control_plane,
     azurerm_role_assignment.aks_network_contributor_nodes,
     azurerm_role_assignment.aks_network_contributor_pods
   ]
+  create_duration = "30s"
 }
 
 # -----------------------------------------------------------------------------
@@ -148,9 +163,10 @@ resource "azurerm_kubernetes_cluster" "main" {
 # -----------------------------------------------------------------------------
 
 resource "azurerm_kubernetes_cluster_node_pool" "tools" {
+  count                 = var.node_count_tools > 0 ? 1 : 0
   name                  = "tools"
   kubernetes_cluster_id = azurerm_kubernetes_cluster.main.id
-  vm_size               = var.vm_size
+  vm_size               = var.vm_size_tools
   node_count            = var.node_count_tools
   vnet_subnet_id        = var.subnet_nodes_id
   pod_subnet_id         = var.subnet_pods_id
@@ -170,9 +186,10 @@ resource "azurerm_kubernetes_cluster_node_pool" "tools" {
 }
 
 resource "azurerm_kubernetes_cluster_node_pool" "monitoring" {
+  count                 = var.node_count_monitoring > 0 ? 1 : 0
   name                  = "monitoring"
   kubernetes_cluster_id = azurerm_kubernetes_cluster.main.id
-  vm_size               = var.vm_size
+  vm_size               = var.vm_size_monitoring
   node_count            = var.node_count_monitoring
   vnet_subnet_id        = var.subnet_nodes_id
   pod_subnet_id         = var.subnet_pods_id

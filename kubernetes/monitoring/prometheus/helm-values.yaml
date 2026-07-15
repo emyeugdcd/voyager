@@ -1,0 +1,58 @@
+# Kube Prometheus Stack Custom Values Configuration
+# Pins monitoring pods to the monitoring node pool
+
+prometheus:
+  prometheusSpec:
+    nodeSelector: {}
+    tolerations: []
+    resources:
+      limits:
+        cpu: 500m
+        memory: 1024Mi
+      requests:
+        cpu: 250m
+        memory: 512Mi
+
+alertmanager:
+  alertmanagerSpec:
+    nodeSelector: {}
+    tolerations: []
+  config:
+    global:
+      resolve_timeout: 5m
+    route:
+      group_by: ['alertname', 'namespace']
+      group_wait: 10s
+      group_interval: 5m
+      repeat_interval: 12h
+      receiver: 'null-receiver'
+    receivers:
+      - name: 'null-receiver'
+
+prometheus-node-exporter:
+  # Node exporter runs as a DaemonSet to collect node-level metrics
+  # It must tolerate all taints to run on main, tools, and monitoring pools
+  tolerations:
+    - operator: Exists
+      effect: NoSchedule
+
+# Alerting rules
+additionalPrometheusRulesMap:
+  rule-name:
+    groups:
+      - name: voyager-alerts
+        rules:
+          - alert: NodeMemoryUsageHigh
+            expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 > 85
+            for: 5m
+            labels:
+              severity: warning
+            annotations:
+              summary: "Node Memory usage is high on {{ $labels.instance }}"
+          - alert: PodCrashLooping
+            expr: rate(kube_pod_container_status_restarts_total[5m]) * 60 > 2
+            for: 2m
+            labels:
+              severity: critical
+            annotations:
+              summary: "Pod {{ $labels.pod }} is restarting frequently in namespace {{ $labels.namespace }}"

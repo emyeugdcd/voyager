@@ -1,0 +1,23 @@
+global:
+  nodeSelector: {}
+  tolerations: []
+
+server:
+  nodeSelector: {}
+  tolerations: []
+
+controller:
+  nodeSelector: {}
+  tolerations: []
+
+repoServer:
+  nodeSelector: {}
+  tolerations: []
+
+redis:
+  nodeSelector: {}
+  tolerations: []
+
+applicationSet:
+  nodeSelector: {}
+  tolerations: []

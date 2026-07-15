@@ -1,6 +1,6 @@
-# 🛠️ Voyager: Installation Guide & Toolkit
+# Voyager: Installation Guide & Toolkit
 
-This document outlines the system packages, CLIs, and configuration tools you need to install locally on your machine to manage, debug, and automate your cloud-migrated Kubernetes cluster and Terraform workspaces.
+This document outlines the system packages, CLIs, and configuration tools you need to install locally on your machine to test, manage, debug, and automate your cloud-migrated Kubernetes cluster and Terraform workspaces, including this project Voayger.
 
 ---
 

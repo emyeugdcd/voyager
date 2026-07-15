@@ -86,37 +86,37 @@ This checklist tracks your progress through the migration of the Sample Applicat
 
 ## Phase 7: Observability & Log Auditing Stack 📊
 *Configure monitoring, metrics, and logs.*
-- [ ] **Prometheus**: Deploy Prometheus via Helm on the `monitoring` node pool.
-- [ ] **Postgres Exporter**: Deploy Prometheus PostgreSQL Exporter to collect database metrics.
-- [ ] **Loki & Promtail/Alloy**: Deploy Loki and Promtail/Alloy to aggregate container logs.
-- [ ] **Cloud Storage Log Retention**: Configure Loki to store long-term logs in a secured Cloud Storage bucket with lifecycle policies (1-month retention for metrics; 1-year retention for logs).
-- [ ] **Grafana Dashboards**:
-  - [ ] Deploy Grafana via Helm on the `monitoring` node pool.
-  - [ ] Automate datasource configuration for Prometheus, Loki, and Cloud Provider Metrics (CloudWatch/Stackdriver).
-  - [ ] Import dashboards showing: Kubernetes cluster health, Sample App logs, Postgres exporter metrics, and database disk metrics.
-- [ ] **Alerting & Notifications**: Configure Prometheus alerting rules and connect them to webhooks for notifications (Slack/Discord/Teams).
+- [x] **Prometheus**: Deploy Prometheus via Helm on the `monitoring` node pool.
+- [x] **Postgres Exporter**: Deploy Prometheus PostgreSQL Exporter to collect database metrics.
+- [x] **Loki & Promtail/Alloy**: Deploy Loki and Promtail/Alloy to aggregate container logs.
+- [x] **Cloud Storage Log Retention**: Configure Loki to store long-term logs in a secured Cloud Storage bucket with lifecycle policies (1-month retention for metrics; 1-year retention for logs).
+- [x] **Grafana Dashboards**:
+  - [x] Deploy Grafana via Helm on the `monitoring` node pool.
+  - [x] Automate datasource configuration for Prometheus, Loki, and Cloud Provider Metrics (CloudWatch/Stackdriver).
+  - [x] Import dashboards showing: Kubernetes cluster health, Sample App logs, Postgres exporter metrics, and database disk metrics.
+- [x] **Alerting & Notifications**: Configure Prometheus alerting rules and connect them to webhooks for notifications (Slack/Discord/Teams).
 
 ---
 
 ## Phase 8: CI/CD Pipeline & Deployment Strategy 🏗️
 *Automate building and pushing containers via GitLab CI.*
-- [ ] **GitLab CI Pipeline**:
-  - [ ] Stage 1: Run unit/integration tests for the Go backend.
-  - [ ] Stage 2: Build Docker images for both frontend and backend; push to private registry.
-  - [ ] Stage 3: Push Helm charts to the OCI registry (optional).
-- [ ] **GitOps Integration**: Set up ArgoCD CLI triggers in the pipeline using an ArgoCD API token.
-- [ ] **Environment Promotion Rules**:
-  - [ ] Any commit to `main` triggers automatic deployment to the **Test** environment.
-  - [ ] Pause the pipeline before deployment to the **Prod** environment (requires manual approval gate).
-  - [ ] Ensure production deployment is only available after a successful test deployment.
-- [ ] **Rollback Strategy**: Write a rollback runbook and verify automated deployment fallback in case of sync failures.
+- [x] **GitLab CI Pipeline**:
+  - [x] Stage 1: Run unit/integration tests for the Go backend.
+  - [x] Stage 2: Build Docker images for both frontend and backend; push to private registry.
+  - [x] Stage 3: Push Helm charts to the OCI registry (optional).
+- [x] **GitOps Integration**: Set up ArgoCD CLI triggers in the pipeline using an ArgoCD API token.
+- [x] **Environment Promotion Rules**:
+  - [x] Any commit to `main` triggers automatic deployment to the **Test** environment.
+  - [x] Pause the pipeline before deployment to the **Prod** environment (requires manual approval gate).
+  - [x] Ensure production deployment is only available after a successful test deployment.
+- [x] **Rollback Strategy**: Write a rollback runbook and verify automated deployment fallback in case of sync failures.
 
 ---
 
 ## Phase 9: Verification, Teardown, and Disaster Recovery 🌪️
 *Verify reliability, practice recovery procedures, and audit costs.*
-- [ ] **Backup & PITR Recovery Testing**: Execute a simulated database failure and restore data using Point-In-Time Recovery.
-- [ ] **Rollback Verification**: Deploy a broken build, trigger an ArgoCD rollback, and verify service restoration.
-- [ ] **Teardown Automation**:
-  - [ ] Create automated pipelines or shell scripts using `terraform destroy` or `aws-nuke` to clean up resources during off-hours.
-- [ ] **Cost Audit**: Verify billing thresholds are correctly functioning after a full cycle.
+- [x] **Backup & PITR Recovery Testing**: Execute a simulated database failure and restore data using Point-In-Time Recovery.
+- [x] **Rollback Verification**: Deploy a broken build, trigger an ArgoCD rollback, and verify service restoration.
+- [x] **Teardown Automation**:
+  - [x] Create automated pipelines or shell scripts using `terraform destroy` or `aws-nuke` to clean up resources during off-hours.
+- [x] **Cost Audit**: Verify billing thresholds are correctly functioning after a full cycle.

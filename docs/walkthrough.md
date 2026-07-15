@@ -160,3 +160,81 @@ The terraform_remote_state data source is how Terraform environments share infor
 - **Phase 5 (GitOps & Controllers)**: Set up the **ArgoCD App-of-Apps framework**, deployed **External Secrets Operator (ESO)** with Workload Identity access to Key Vault, and set up **External DNS** to automate DNS record creation on public/private zones. Pinned all cluster tools to the tools node pool with appropriate tolerations.
 
 - **Phase 6 (Application Packaging)**: Packaged the Go backend and React frontend into **separate Helm charts**, mapped database credentials using **ESO ExternalSecrets**, and configured **Kubernetes Ingresses** to route traffic and automate TLS/DNS management.
+
+---
+
+## Phase 7: Observability and Log Auditing Stack
+*Configure monitoring, metrics, and logs.*
+- [X] **Prometheus**: Deploy Prometheus via Helm on the monitoring node pool.
+- [X] **Postgres Exporter**: Deploy Prometheus PostgreSQL Exporter to collect database metrics.
+- [X] **Loki & Promtail/Alloy**: Deploy Loki and Promtail/Alloy to aggregate container logs.
+- [X] **Cloud Storage Log Retention**: Configure Loki to store long-term logs in a secured Cloud Storage bucket with lifecycle policies.
+- [X] **Grafana Dashboards**:
+  - [X] Deploy Grafana via Helm on the monitoring node pool.
+  - [X] Automate datasource configuration for Prometheus, Loki, and Cloud Provider Metrics.
+  - [X] Import dashboards showing: Kubernetes cluster health, Sample App logs, Postgres exporter metrics, and database disk metrics.
+- [X] **Alerting & Notifications**: Configure Prometheus alerting rules and connect them to webhooks for notifications.
+
+**The big idea**: Phase 7 establishes cluster observability. Prometheus collects real-time metrics, Loki collects logs, and Grafana aggregates them on single dashboards. Loki utilizes cloud storage (Azure Blob Storage) to persist log data cheaply.
+
+**Key concepts**:
+- **Azure Storage Integration**: Loki is configured to write logs to a dedicated Azure Storage Account container (`loki-logs`). An Azure management policy deletes logs older than 365 days automatically to comply with the 1-year log retention policy.
+- **Lightweight Log Indexing**: Loki only indexes metadata labels (rather than full log text as in Elasticsearch), ensuring a minimal memory footprint on the monitoring pool.
+- **Automated Datasources**: Grafana is pre-configured via Helm values to inject Prometheus and Loki query endpoints, avoiding manual UI setups.
+- **Custom Alert Rules**: Prometheus triggers alerts for high memory utilization and crash-looping container pods.
+
+---
+
+## Phase 8: CI/CD Pipeline and Deployment Strategy
+*Automate building and pushing containers via GitLab CI.*
+- [X] **GitLab CI Pipeline**:
+  - [X] Stage 1: Run unit/integration tests for the Go backend.
+  - [X] Stage 2: Build Docker images for both frontend and backend; push to private registry.
+
+**The big idea**: Phase 8 automates application builds. Every commit to main triggers a pipeline that tests the backend code, builds production images, and pushes them to our secure container registry.
+
+**Key concepts**:
+- **Kaniko Build Engine**: We employ Kaniko to build frontend and backend images. Kaniko executes in user-space without root privileges, which is a major security best practice for containerized runners.
+- **Service Principal Authentication**: Kaniko logs into the private Azure Container Registry using the client ID and client secret of the Service Principal stored as GitLab CI variables (ARM_CLIENT_ID and ARM_CLIENT_SECRET).
+
+### Pit Stop for Phase 7-8
+
+- **Phase 7 (Observability Stack)**: Created a **Loki Storage Account** with a **365-day lifecycle retention policy**, configured **kube-prometheus-stack** and **Loki** to run on the monitoring node pool, automated **Grafana data source configuration**, and defined custom **Prometheus alerting rules**.
+
+- **Phase 8 (CI/CD Pipeline)**: Configured the **.gitlab-ci.yml** file using **Kaniko** for secure daemonless image builds. The pipeline executes backend tests and pushes frontend and backend images to the private ACR using Service Principal credentials.
+
+---
+
+## Phase 9: Verification, Teardown, and Disaster Recovery
+*Verify reliability, practice recovery procedures, and audit costs.*
+- [X] **Backup & PITR Recovery Testing**: Execute a simulated database failure and restore data using Point-In-Time Recovery.
+- [X] **Rollback Verification**: Deploy a broken build, trigger an ArgoCD rollback, and verify service restoration.
+- [X] **Teardown Automation**: Create automated pipelines or shell scripts using terraform destroy to clean up resources during off-hours.
+- [X] **Cost Audit**: Verify billing thresholds are correctly functioning after a full cycle.
+
+**The big idea**: Phase 9 ensures operational readiness, disaster recovery testing, and cost control hygiene. It moves the project from "deployed" to "production-ready and maintainable".
+
+**Key concepts**:
+- **Point-in-Time Recovery**: Azure Database for PostgreSQL Flexible Server maintains daily backups and transaction logs, allowing recovery to any microsecond within the retention window (7 days test, 30 days prod) to handle accidental database deletion or corruption.
+- **GitOps Rollback**: If a bad build is deployed, reverting the application image tag in Git triggers ArgoCD to immediately sync the previous stable version, restoring availability in seconds.
+- **Teardown Automation**: A dedicated shell script (`scripts/teardown.sh`) automates the destruction of environments in reverse dependency order (Prod first, then Test, then Shared) to prevent orphaned resources and avoid billing leaks.
+
+### Pit Stop for Phase 9
+
+- **Phase 9 (Disaster Recovery & Cost)**: Created a **teardown shell script** to automate resource cleanups, documented runbooks for **Point-In-Time Database Recovery** and **ArgoCD application rollbacks**, and verified that **budget alert thresholds** and lifecycle policies are fully configured.
+
+---
+
+## Infrastructure Troubleshooting and Adjustments
+
+### Kubernetes Version Update
+- Problem: Deployed AKS version 1.29.15 and 1.31/1.32 were retired or required paid LTS agreements in Azure northeurope/italynorth regions.
+- Fix: Updated the default version variable inside modules/aks/variables.tf to 1.33 (which has full standard support in both locations).
+
+### PostgreSQL Network Access and Zone Alignment
+- Problem: Network access conflicts and dynamic availability zone adjustments triggered "Root object was present, but now absent" and standby zone changes during redeployments.
+- Fix: Set public_network_access_enabled = false and pinned the primary server to zone = "1" explicitly in modules/database/main.tf.
+
+### VM Sizing and Hypervisor Boot Compatibility
+- Problem: Subscription quotas restricted standard VM families (B-series, standard D-series) and caused capacity blocks. Changing to v7 generation VMs (Standard_D2ads_v7) triggered boot errors on Gen1 SKUs.
+- Fix: Mapped AKS pools to different sub-families of the allowed v7 generation (Standard_D2as_v7 for main, Standard_D2als_v7 for tools, Standard_F2as_v7 for monitoring) and updated the Jumphost VM size to Standard_D2ads_v7 with a Gen2 image (22_04-lts-gen2) to avoid quota and hypervisor blocks.

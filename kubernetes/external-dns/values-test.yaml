@@ -14,15 +14,9 @@ serviceAccount:
   create: true
   name: external-dns-sa
   annotations:
-    # REPLACE with the client ID of the External DNS User Assigned Identity (outputted as external_dns_identity_client_id by Terraform)
-    azure.workload.identity/client-id: "external-dns-identity-client-id-placeholder"
+    azure.workload.identity/client-id: "52265180-fb17-41ab-92a0-8eff8bf9e0d9"
 
 # Ensure pods run on the tools pool
-nodeSelector:
-  role: tools
+nodeSelector: {}
 
-tolerations:
-  - key: "role"
-    operator: "Equal"
-    value: "tools"
-    effect: "NoSchedule"
+tolerations: []

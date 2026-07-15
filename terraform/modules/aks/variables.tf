@@ -20,8 +20,8 @@ variable "environment" {
 
 variable "kubernetes_version" {
   type        = string
-  default     = "1.29"
-  description = "Kubernetes control plane version."
+  default     = "1.33"
+  description = "Kubernetes control plane version. Must be in standard (non-LTS) support."
 }
 
 variable "subnet_nodes_id" {
@@ -63,10 +63,22 @@ variable "node_count_monitoring" {
   description = "Initial node count for the monitoring node pool."
 }
 
-variable "vm_size" {
+variable "vm_size_main" {
   type        = string
-  default     = "Standard_D2s_v3"
-  description = "VM size for the node pools."
+  default     = "Standard_D2as_v7"
+  description = "VM size for the main node pool (BS Family)."
+}
+
+variable "vm_size_tools" {
+  type        = string
+  default     = "Standard_D2als_v7"
+  description = "VM size for the tools node pool (Dalsv7 Family)."
+}
+
+variable "vm_size_monitoring" {
+  type        = string
+  default     = "Standard_F2as_v7"
+  description = "VM size for the monitoring node pool (Fasv7 Family)."
 }
 
 variable "service_cidr" {
@@ -79,4 +91,10 @@ variable "dns_service_ip" {
   type        = string
   default     = "172.16.0.10"
   description = "Kubernetes DNS service IP. Must be inside service_cidr."
+}
+
+variable "private_cluster_enabled" {
+  type        = bool
+  default     = true
+  description = "Whether the AKS cluster should have a private API server."
 }

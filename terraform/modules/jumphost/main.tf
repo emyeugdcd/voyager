@@ -32,10 +32,9 @@ variable "ssh_public_key"      {
 
 variable "vm_size" {
   type    = string
-  default = "Standard_B1s"
-  # B1s: 1 vCPU, 1GB RAM. Enough for kubectl, psql, helm, argocd CLI.
-  # B-series are "burstable", they accumulate CPU credits at idle and spend
-  # them when we need them. Perfect for an intermittently-used jumphost.
+  default = "Standard_D2ads_v7"
+  # Standard_D2ads_v7 (Dadsv7 Family): avoids capacity and quota limits.
+  # Deallocate when not in use to avoid charges: az vm deallocate --name ... --resource-group ...
 }
 
 # Public IP for the jumphost — this is the only public IP in the private cluster
@@ -93,8 +92,6 @@ resource "azurerm_linux_virtual_machine" "jumphost" {
     offer     = "0001-com-ubuntu-server-jammy"
     sku       = "22_04-lts-gen2"
     version   = "latest"
-    # Ubuntu 22.04 LTS. "latest" is acceptable for a jumphost since we're not
-    # running application workloads here, just CLI tools.
   }
 
   # cloud-init script: installs the tools we need on first boot.

@@ -188,3 +188,73 @@ resource "azurerm_federated_identity_credential" "external_dns" {
   parent_id           = azurerm_user_assigned_identity.external_dns.id
   subject             = "system:serviceaccount:external-dns:external-dns-sa"
 }
+
+# -----------------------------------------------------------------------------
+# LOKI OBSERVABILITY STORAGE & IDENTITY (Phase 7)
+# -----------------------------------------------------------------------------
+
+resource "random_id" "loki_suffix" {
+  keepers = {
+    location = var.location
+  }
+  byte_length = 4
+}
+
+# Azure Storage Account for Loki logs (Prod HA using GRS replication)
+resource "azurerm_storage_account" "loki" {
+  name                     = "voyagerloki${var.environment}${random_id.loki_suffix.hex}"
+  resource_group_name      = azurerm_resource_group.prod.name
+  location                 = var.location
+  account_tier             = "Standard"
+  account_replication_type = "GRS"
+}
+
+# Container for Loki logs
+resource "azurerm_storage_container" "loki" {
+  name                  = "loki-logs"
+  storage_account_name  = azurerm_storage_account.loki.name
+  container_access_type = "private"
+}
+
+# Lifecycle policy: delete logs older than 365 days
+resource "azurerm_storage_management_policy" "loki" {
+  storage_account_id = azurerm_storage_account.loki.id
+
+  rule {
+    name    = "loki-logs-retention"
+    enabled = true
+    filters {
+      prefix_match = ["loki-logs/"]
+      blob_types   = ["blockBlob"]
+    }
+    actions {
+      base_blob {
+        delete_after_days_since_modification_greater_than = 365
+      }
+    }
+  }
+}
+
+# Managed Identity for Loki
+resource "azurerm_user_assigned_identity" "loki" {
+  name                = "${var.project}-${var.environment}-loki-identity"
+  location            = var.location
+  resource_group_name = azurerm_resource_group.prod.name
+}
+
+# Grant Storage Blob Data Contributor role to Loki identity over storage scope
+resource "azurerm_role_assignment" "loki_storage" {
+  scope                = azurerm_storage_account.loki.id
+  role_definition_name = "Storage Blob Data Contributor"
+  principal_id         = azurerm_user_assigned_identity.loki.principal_id
+}
+
+# Link Loki identity to AKS service account via OIDC federation
+resource "azurerm_federated_identity_credential" "loki" {
+  name                = "${var.project}-${var.environment}-loki-federated"
+  resource_group_name = azurerm_resource_group.prod.name
+  audience            = ["api://AzureADTokenExchange"]
+  issuer              = module.aks.oidc_issuer_url
+  parent_id           = azurerm_user_assigned_identity.loki.id
+  subject             = "system:serviceaccount:monitoring:loki-sa"
+}

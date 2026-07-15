@@ -4,33 +4,17 @@ serviceAccount:
   create: true
   name: external-secrets-sa
   annotations:
-    # REPLACE with the actual client ID of the User Assigned Identity for ESO (outputted as eso_identity_client_id by Terraform)
-    azure.workload.identity/client-id: "eso-identity-client-id-placeholder"
+    azure.workload.identity/client-id: "e66ac6af-1d7d-445d-a8f7-334749105a47"
 
 # Pin all pods to tools pool
-nodeSelector:
-  role: tools
+nodeSelector: {}
 
-tolerations:
-  - key: "role"
-    operator: "Equal"
-    value: "tools"
-    effect: "NoSchedule"
+tolerations: []
 
 webhook:
-  nodeSelector:
-    role: tools
-  tolerations:
-    - key: "role"
-      operator: "Equal"
-      value: "tools"
-      effect: "NoSchedule"
+  nodeSelector: {}
+  tolerations: []
 
 certController:
-  nodeSelector:
-    role: tools
-  tolerations:
-    - key: "role"
-      operator: "Equal"
-      value: "tools"
-      effect: "NoSchedule"
+  nodeSelector: {}
+  tolerations: []

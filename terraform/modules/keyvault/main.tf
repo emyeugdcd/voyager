@@ -28,6 +28,9 @@ data "azurerm_client_config" "current" {}
 
 # Generate a unique suffix for Key Vault name (names must be globally unique)
 resource "random_id" "kv_suffix" {
+  keepers = {
+    location = var.location
+  }
   byte_length = 4
 }
 

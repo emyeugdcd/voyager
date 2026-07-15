@@ -39,3 +39,13 @@ output "external_dns_identity_client_id" {
   value       = azurerm_user_assigned_identity.external_dns.client_id
   description = "Client ID of the User Assigned Identity for External DNS."
 }
+
+output "loki_storage_account_name" {
+  value       = azurerm_storage_account.loki.name
+  description = "Name of the Storage Account for Loki logs."
+}
+
+output "loki_identity_client_id" {
+  value       = azurerm_user_assigned_identity.loki.client_id
+  description = "Client ID of the Loki User Assigned Identity."
+}

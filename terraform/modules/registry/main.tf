@@ -1,7 +1,7 @@
 # =============================================================================
 # MODULE: registry
 # =============================================================================
-# This module creates Azure Container Registry (ACR) — the private Docker
+# This module creates Azure Container Registry (ACR) —¨ the private Docker
 # registry where our built images live before AKS pulls them.
 #
 # In AWS this would be ECR. In GCP, Artifact Registry. Azure's version is ACR.
