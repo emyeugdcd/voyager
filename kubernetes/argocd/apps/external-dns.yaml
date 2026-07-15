@@ -13,8 +13,7 @@ spec:
       targetRevision: 1.14.3
       helm:
         valueFiles:
-          - $values/kubernetes/external-dns/values-test.yaml
-    - repoURL: 'https://gitlab.com/emyeugdcd/voyager' 
+    - repoURL: 'https://github.com/emyeugdcd/voyager.git'
       ref: values
   destination:
     server: 'https://kubernetes.default.svc'

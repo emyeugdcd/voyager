@@ -8,7 +8,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'https://gitlab.com/emyeugdcd/voyager'
+    repoURL: 'https://github.com/emyeugdcd/voyager.git'
     path: charts/frontend
     helm:
       valueFiles:
