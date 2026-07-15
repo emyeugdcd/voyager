@@ -16,7 +16,7 @@ grafana:
       type: prometheus
       access: proxy
       url: http://kube-prometheus-stack-prometheus.monitoring.svc:9090
-      isDefault: true
+      isDefault: false
       jsonData:
         timeInterval: 30s
     - name: Loki
