@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: external-dns-azure-config
+  namespace: external-dns
+data:
+  azure.json: |
+    {
+      "tenantId": "5b7591f7-41a6-408a-90be-2e5e1e9d386b",
+      "subscriptionId": "16ae35b8-3311-486c-b92e-edfd46b1e826",
+      "resourceGroup": "voyager-test-rg",
+      "useWorkloadIdentityExtension": true
+    }

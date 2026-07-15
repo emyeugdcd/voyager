@@ -1,20 +1,29 @@
-provider: azure
-
-azure:
-  # The Azure Tenant ID
-  tenantId: "5b7591f7-41a6-408a-90be-2e5e1e9d386b"
-  # The Azure Subscription ID
-  subscriptionId: "16ae35b8-3311-486c-b92e-edfd46b1e826"
-  # The resource group where the public/private DNS zones are located
-  resourceGroup: "voyager-test-rg"
-  # Use Workload Identity for authentication instead of a client secret file
-  useWorkloadIdentityExtension: true
+provider:
+  name: azure
 
 serviceAccount:
   create: true
   name: external-dns-sa
+  labels:
+    azure.workload.identity/use: "true"
   annotations:
     azure.workload.identity/client-id: "52265180-fb17-41ab-92a0-8eff8bf9e0d9"
+
+podLabels:
+  azure.workload.identity/use: "true"
+
+extraVolumes:
+  - name: azure-config-file
+    configMap:
+      name: external-dns-azure-config
+
+extraVolumeMounts:
+  - name: azure-config-file
+    mountPath: /etc/kubernetes
+    readOnly: true
+
+extraArgs:
+  - --azure-config-file=/etc/kubernetes/azure.json
 
 # Ensure pods run on the tools pool
 nodeSelector: {}
