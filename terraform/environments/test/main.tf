@@ -108,11 +108,12 @@ module "dns" {
 }
 
 module "keyvault" {
-  source              = "../../modules/keyvault"
-  resource_group_name = azurerm_resource_group.test.name
-  location            = var.location
-  project             = var.project
-  environment         = var.environment
+  source                    = "../../modules/keyvault"
+  resource_group_name       = azurerm_resource_group.test.name
+  location                  = var.location
+  project                   = var.project
+  environment               = var.environment
+  secret_reader_object_ids  = [azurerm_user_assigned_identity.eso.principal_id]
 }
 
 module "database" {

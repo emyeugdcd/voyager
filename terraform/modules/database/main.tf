@@ -93,6 +93,13 @@ resource "azurerm_postgresql_flexible_server_database" "sampleapp" {
   charset   = "utf8"
 }
 
+# Disable secure transport (SSL/TLS enforcement) because the backend code uses hardcoded sslmode=disable
+resource "azurerm_postgresql_flexible_server_configuration" "disable_ssl" {
+  name      = "require_secure_transport"
+  server_id = azurerm_postgresql_flexible_server.main.id
+  value     = "off"
+}
+
 # -----------------------------------------------------------------------------
 # OUTPUTS
 # -----------------------------------------------------------------------------
