@@ -1,23 +1,27 @@
 global:
-  nodeSelector: {}
-  tolerations: []
+  nodeSelector:
+    role: main
 
 server:
-  nodeSelector: {}
-  tolerations: []
+  nodeSelector:
+    role: main
 
 controller:
-  nodeSelector: {}
-  tolerations: []
+  nodeSelector:
+    role: main
 
 repoServer:
-  nodeSelector: {}
-  tolerations: []
+  nodeSelector:
+    role: main
 
 redis:
-  nodeSelector: {}
-  tolerations: []
+  nodeSelector:
+    role: main
 
 applicationSet:
-  nodeSelector: {}
-  tolerations: []
+  nodeSelector:
+    role: main
+
+notifications:
+  nodeSelector:
+    role: main

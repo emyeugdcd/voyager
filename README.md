@@ -174,14 +174,13 @@ kubectl create namespace external-secrets
 kubectl create namespace external-dns
 kubectl create namespace monitoring
 kubectl create namespace sampleapp
-```
 
 - **Install ArgoCD** (using the new values-test.yaml override):
 
 ```bash
 helm repo add argo https://argoproj.github.io/argo-helm
 helm repo update
-helm upgrade --install argocd argo/argo-cd -n argocd -f kubernetes/argocd/install/values.yaml -f kubernetes/argocd/install/values-test.yaml
+helm install argocd argo/argo-cd -n argocd -f kubernetes/argocd/install/values.yaml -f kubernetes/argocd/install/values-test.yaml
 
 - **Apply the root App of Apps**:
 
