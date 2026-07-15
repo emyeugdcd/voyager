@@ -13,7 +13,7 @@ spec:
       targetRevision: 1.14.3
       helm:
         valueFiles:
-    - repoURL: 'https://github.com/emyeugdcd/voyager.git'
+    - repoURL: 'https://gitlab.com/emyeugdcd/voyager.git'
       ref: values
   destination:
     server: 'https://kubernetes.default.svc'

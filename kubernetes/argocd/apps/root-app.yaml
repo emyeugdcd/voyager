@@ -8,7 +8,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'https://github.com/emyeugdcd/voyager.git'
+    repoURL: 'https://gitlab.com/emyeugdcd/voyager.git'
     targetRevision: HEAD
     path: kubernetes/argocd/apps
   destination:
