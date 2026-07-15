@@ -43,3 +43,5 @@ override.tf
 # Generated kubeconfig: don't commit this
 kubeconfig
 kubeconfig-*
+
+oral-presentation.md

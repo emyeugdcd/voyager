@@ -256,6 +256,35 @@ az aks get-credentials \
 
 kubectl get nodes
 ```
+
+### Accessing Internal Services (Port-Forwarding)
+
+Once the cluster is bootstrapped and workloads are running, you can access the private admin dashboards from your local machine using port-forwarding:
+
+#### 1. Access ArgoCD Dashboard
+```bash
+# Port-forward the ArgoCD server (runs on port 8080 locally)
+kubectl port-forward svc/argocd-server -n argocd 8080:443
+```
+* Open your browser and navigate to: `https://localhost:8080`
+* **Username**: `admin`
+* **Password**: Retrieve the auto-generated password with:
+  ```bash
+  kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 --decode; echo
+  ```
+
+#### 2. Access Grafana Observability Dashboard
+```bash
+# Port-forward the Grafana service (runs on port 3000 locally)
+kubectl port-forward svc/kube-prometheus-stack-grafana -n monitoring 3000:80
+```
+* Open your browser and navigate to: `http://localhost:3000`
+* **Username**: `admin`
+* **Password**: Retrieve the auto-generated password with:
+  ```bash
+  kubectl get secret kube-prometheus-stack-grafana -n monitoring -o jsonpath="{.data.admin-password}" | base64 --decode; echo
+  ```
+
  
 ## CI/CD Pipeline
  
