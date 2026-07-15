@@ -1,4 +1,5 @@
-provider: azure
+provider:
+  name: azure
 
 azure:
   # The Azure Tenant ID
