@@ -1,0 +1,33 @@
+replicaCount: 1
+
+image:
+  repository: "voyageracrshared.azurecr.io/frontend"
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    external-dns.alpha.kubernetes.io/hostname: "frontend.test-public.voyager-cloud.com"
+  hosts:
+    - host: frontend.test-public.voyager-cloud.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: frontend-tls
+      hosts:
+        - frontend.test-public.voyager-cloud.com
+
+# Pin frontend pods to main pool
+nodeSelector:
+  role: main
+
+tolerations: []
+affinity: {}

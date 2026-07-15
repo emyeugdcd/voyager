@@ -1,20 +1,22 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: root-app
+  name: sample-app-backend
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   source:
-    # REPLACE this URL with your actual GitLab project git repository URL
-    repoURL: 'https://gitlab.com/lducanh1991/voyager.git'
+    repoURL: 'https://gitlab.com/lducanh1991/voyager.git' # REPLACE with your actual repository URL
     targetRevision: HEAD
-    path: kubernetes/argocd/apps
+    path: charts/backend
+    helm:
+      valueFiles:
+        - values-test.yaml # In production, this will be values-prod.yaml
   destination:
     server: 'https://kubernetes.default.svc'
-    namespace: argocd
+    namespace: sample-app
   syncPolicy:
     automated:
       prune: true

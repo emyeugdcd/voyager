@@ -1,0 +1,36 @@
+installCRDs: true
+
+serviceAccount:
+  create: true
+  name: external-secrets-sa
+  annotations:
+    # REPLACE with the actual client ID of the User Assigned Identity for ESO (outputted as eso_identity_client_id by Terraform in prod)
+    azure.workload.identity/client-id: "eso-identity-client-id-placeholder-prod"
+
+# Pin all pods to tools pool
+nodeSelector:
+  role: tools
+
+tolerations:
+  - key: "role"
+    operator: "Equal"
+    value: "tools"
+    effect: "NoSchedule"
+
+webhook:
+  nodeSelector:
+    role: tools
+  tolerations:
+    - key: "role"
+      operator: "Equal"
+      value: "tools"
+      effect: "NoSchedule"
+
+certController:
+  nodeSelector:
+    role: tools
+  tolerations:
+    - key: "role"
+      operator: "Equal"
+      value: "tools"
+      effect: "NoSchedule"

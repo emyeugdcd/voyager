@@ -19,68 +19,68 @@ This checklist tracks your progress through the migration of the Sample Applicat
 
 ## Phase 2: Shared Resources & Registries 📦
 *Setup resources shared across environments.*
-- [ ] **Private Container Registry**: Set up a private registry (AWS ECR / GCP Artifact Registry) in the Shared account.
-- [ ] **Registry Access Policies**: Configure IAM access policies allowing the Kubernetes worker node roles in Test and Prod to pull container images.
-- [ ] **Image Lifecycle Policies**: Configure image lifecycle rules (e.g., auto-clean untagged images after 14 days) to save storage costs.
-- [ ] **(Optional Extra) Self-Managed GitLab VM**: If implementing the self-managed GitLab extra requirement, provision its VPC, compute instance, and persistent storage volume using Terraform.
+- [x] **Private Container Registry**: Set up a private registry (AWS ECR / GCP Artifact Registry / Azure ACR) in the Shared account.
+- [x] **Registry Access Policies**: Configure IAM access policies allowing the Kubernetes worker node roles in Test and Prod to pull container images.
+- [x] **Image Lifecycle Policies**: Configure image lifecycle rules (e.g., auto-clean untagged images after 14 days) to save storage costs.
+- [x] **(Optional Extra) Self-Managed GitLab VM**: If implementing the self-managed GitLab extra requirement, provision its VPC, compute instance, and persistent storage volume using Terraform.
 
 ---
 
 ## Phase 3: Core Networking & Kubernetes Clusters (IaC) 🌐
 *Define your cloud networking and private Kubernetes clusters using Terraform.*
-- [ ] **VPC Provisioning (Test & Prod)**: Use Terraform modules to provision isolated VPCs with private and public subnets.
-- [ ] **NAT Gateway**: Set up a NAT Gateway in public subnets for outbound internet traffic from private nodes.
-- [ ] **Kubernetes Cluster Setup**:
-  - [ ] Provision GKE Standard / AWS EKS cluster (no GKE Autopilot or EKS Auto Mode).
-  - [ ] Ensure the **Prod** control plane is configured for High Availability (HA).
-- [ ] **Private Cluster Security**: Configure the cluster control plane and worker nodes to use private IPs only (no public IPs).
-- [ ] **Worker Node Pools**: Provision three separate node pools:
-  - [ ] `main` (for React frontend and Go backend application pods).
-  - [ ] `tools` (for ArgoCD and External DNS/Secrets pods).
-  - [ ] `monitoring` (for Prometheus, Grafana, and Loki pods).
-- [ ] **Multi-AZ Availability**: Ensure Prod node groups span across multiple Availability Zones (AZs).
-- [ ] **Cluster Access**: Configure kubectl authentication securely (e.g., bastion host, jumphost, or managed client VPN).
+- [x] **VPC Provisioning (Test & Prod)**: Use Terraform modules to provision isolated VNets with private and public subnets.
+- [x] **NAT Gateway**: Set up a NAT Gateway in public subnets for outbound internet traffic from private nodes.
+- [x] **Kubernetes Cluster Setup**:
+  - [x] Provision GKE Standard / AWS EKS / Azure AKS cluster (no GKE Autopilot or EKS Auto Mode).
+  - [x] Ensure the **Prod** control plane is configured for High Availability (HA).
+- [x] **Private Cluster Security**: Configure the cluster control plane and worker nodes to use private IPs only (no public IPs).
+- [x] **Worker Node Pools**: Provision three separate node pools:
+  - [x] `main` (for React frontend and Go backend application pods).
+  - [x] `tools` (for ArgoCD and External DNS/Secrets pods).
+  - [x] `monitoring` (for Prometheus, Grafana, and Loki pods).
+- [x] **Multi-AZ Availability**: Ensure Prod node groups span across multiple Availability Zones (AZs).
+- [x] **Cluster Access**: Configure kubectl authentication securely (e.g., bastion host, jumphost, or managed client VPN).
 
 ---
 
 ## Phase 4: DNS, TLS, and Database Services (IaC) 🔏
 *Establish domain names, secure connections, and persistent databases.*
-- [ ] **DNS Zones**: Create public and private DNS zones in AWS Route53 or Google Cloud DNS for each environment (e.g., `test-public.domain.com` / `test-private.domain.com`).
-- [ ] **TLS Certificates**: Configure TLS certificates (AWS Certificate Manager or GCP Certificate Manager) for both public and private subnets (wildcard certificates recommended).
-- [ ] **PostgreSQL Managed DB**:
-  - [ ] Provision a managed PostgreSQL instance (AWS RDS / GCP Cloud SQL).
-  - [ ] Ensure database instance is private (no public IP address).
-  - [ ] For **Prod**, enable High Availability (Multi-AZ replication).
-- [ ] **Database Backup & PITR**:
-  - [ ] Configure Point-In-Time Recovery (PITR).
-  - [ ] Retention policy: 30 daily backups for Prod; 7 daily backups for Test.
-- [ ] **Secret Manager Integration**: Store PostgreSQL credentials in the cloud secrets store (AWS Secrets Manager / GCP Secret Manager).
+- [x] **DNS Zones**: Create public and private DNS zones in AWS Route53, Google Cloud DNS, or Azure DNS for each environment (e.g., `test-public.domain.com` / `test-private.domain.com`).
+- [x] **TLS Certificates / Key Vault**: Configure TLS certificates / Key Vault to store secrets and connections securely.
+- [x] **PostgreSQL Managed DB**:
+  - [x] Provision a managed PostgreSQL instance (Azure Database for PostgreSQL Flexible Server).
+  - [x] Ensure database instance is private (no public IP address) using delegated subnets.
+  - [x] For **Prod**, enable High Availability (Zone-Redundant replication).
+- [x] **Database Backup & PITR**:
+  - [x] Configure Point-In-Time Recovery (PITR).
+  - [x] Retention policy: 30 daily backups for Prod; 7 daily backups for Test.
+- [x] **Secret Manager Integration**: Store PostgreSQL credentials in the cloud secrets store (Azure Key Vault).
 
 ---
 
 ## Phase 5: GitOps Tooling & In-Cluster Controllers 🤖
 *Configure ArgoCD and operators to control deployments.*
-- [ ] **ArgoCD Installation**: Install ArgoCD using its official Helm chart, pinning pods to the `tools` node pool.
-- [ ] **App of Apps Pattern**: Set up an ArgoCD "App of Apps" configuration to manage all secondary Helm charts via Git.
-- [ ] **External Secrets Operator (ESO)**:
-  - [ ] Install ESO via Helm.
-  - [ ] Set up the IAM Role for Service Accounts (IRSA/Workload Identity) to allow ESO to query the Cloud Secret Manager.
-  - [ ] Configure `ClusterSecretStore` pointing to the cloud provider's Secrets Manager.
-- [ ] **External DNS**:
-  - [ ] Install External DNS via Helm.
-  - [ ] Configure IAM policies to allow External DNS to update Route53 / Google Cloud DNS zones automatically.
+- [x] **ArgoCD Installation**: Install ArgoCD using its official Helm chart, pinning pods to the `tools` node pool.
+- [x] **App of Apps Pattern**: Set up an ArgoCD "App of Apps" configuration to manage all secondary Helm charts via Git.
+- [x] **External Secrets Operator (ESO)**:
+  - [x] Install ESO via Helm.
+  - [x] Set up the IAM Role for Service Accounts (IRSA/Workload Identity) to allow ESO to query the Cloud Secret Manager.
+  - [x] Configure `ClusterSecretStore` pointing to the cloud provider's Secrets Manager.
+- [x] **External DNS**:
+  - [x] Install External DNS via Helm.
+  - [x] Configure IAM policies to allow External DNS to update Route53 / Google Cloud DNS zones automatically.
 
 ---
 
 ## Phase 6: Application Packaging & ArgoCD Sync 🚀
 *Deploy the Sample Application onto Kubernetes.*
-- [ ] **Helm Chart Packaging**: Create Helm charts for both the React frontend and Go backend (separated charts for independent deployment).
-- [ ] **Environment Values**: Define separate `values-test.yaml` and `values-prod.yaml` files.
-- [ ] **Secret Manifests**: Define `ExternalSecret` custom resources to pull database credentials from the cloud secret store.
-- [ ] **Ingress & External DNS Validation**:
-  - [ ] Define Kubernetes Ingress resources for both frontend and backend.
-  - [ ] Verify that External DNS automatically creates DNS records (e.g., `frontend.test-public.example.com`).
-  - [ ] Validate SSL/TLS handshake for the exposed public endpoints.
+- [x] **Helm Chart Packaging**: Create Helm charts for both the React frontend and Go backend (separated charts for independent deployment).
+- [x] **Environment Values**: Define separate `values-test.yaml` and `values-prod.yaml` files.
+- [x] **Secret Manifests**: Define `ExternalSecret` custom resources to pull database credentials from the cloud secret store.
+- [x] **Ingress & External DNS Validation**:
+  - [x] Define Kubernetes Ingress resources for both frontend and backend.
+  - [x] Verify that External DNS automatically creates DNS records (e.g., `frontend.test-public.example.com`).
+  - [x] Validate SSL/TLS handshake for the exposed public endpoints.
 
 ---
 

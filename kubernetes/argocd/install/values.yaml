@@ -1,0 +1,63 @@
+global:
+  nodeSelector:
+    role: tools
+  tolerations:
+    - key: "role"
+      operator: "Equal"
+      value: "tools"
+      effect: "NoSchedule"
+
+# Also configure specific sub-charts explicitly to guarantee they inherit the selectors
+server:
+  nodeSelector:
+    role: tools
+  tolerations:
+    - key: "role"
+      operator: "Equal"
+      value: "tools"
+      effect: "NoSchedule"
+
+controller:
+  nodeSelector:
+    role: tools
+  tolerations:
+    - key: "role"
+      operator: "Equal"
+      value: "tools"
+      effect: "NoSchedule"
+
+repoServer:
+  nodeSelector:
+    role: tools
+  tolerations:
+    - key: "role"
+      operator: "Equal"
+      value: "tools"
+      effect: "NoSchedule"
+
+redis:
+  nodeSelector:
+    role: tools
+  tolerations:
+    - key: "role"
+      operator: "Equal"
+      value: "tools"
+      effect: "NoSchedule"
+
+applicationSet:
+  nodeSelector:
+    role: tools
+  tolerations:
+    - key: "role"
+      operator: "Equal"
+      value: "tools"
+      effect: "NoSchedule"
+
+notifications:
+  nodeSelector:
+    role: tools
+  tolerations:
+    - key: "role"
+      operator: "Equal"
+      value: "tools"
+      effect: "NoSchedule"

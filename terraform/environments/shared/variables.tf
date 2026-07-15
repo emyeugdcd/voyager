@@ -4,6 +4,12 @@ variable "location" {
   default     = "northeurope"
 }
 
+variable "project" {
+  type        = string
+  description = "Consistent project name prefix."
+  default     = "voyager"
+}
+
 variable "subscription_id" {
   type        = string
   description = "The Azure subscription ID."

@@ -1,0 +1,23 @@
+replicaCount: 1
+
+image:
+  tag: "latest"
+
+ingress:
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    external-dns.alpha.kubernetes.io/hostname: "backend.test-public.voyager-cloud.com"
+  hosts:
+    - host: backend.test-public.voyager-cloud.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: backend-tls
+      hosts:
+        - backend.test-public.voyager-cloud.com
+
+database:
+  # Hostname of the test PostgreSQL server
+  host: "voyager-test-db.postgres.database.azure.com"
+  name: "sampleapp"

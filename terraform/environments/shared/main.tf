@@ -6,12 +6,12 @@ terraform {
     resource_group_name  = "voyager-tfstate-rg"
     storage_account_name = "voyagertfstateb25fa017"
     container_name       = "tfstate"
-    key                  = "shared/terraform.tfstate"  # "test/terraform.tfstate" etc.
+    key                  = "shared/terraform.tfstate"  
   }
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 4.0"
+      version = "~> 3.110"
     }
     azuread = {
       source  = "hashicorp/azuread"
@@ -27,8 +27,13 @@ provider "azurerm" {
 # Define variables and service principal that will be used by GitLab CI to run Terraform
 
 resource "azurerm_resource_group" "shared" {
-  name     = "voyager-shared-rg"
+  name     = "${var.project}-shared-rg"
   location = var.location
+
+  tags = {
+    project    = var.project
+    managed_by = "terraform"
+  }
 }
 
 # This Service Principal is used by GitLab CI to run Terraform
@@ -94,4 +99,46 @@ resource "azurerm_consumption_budget_subscription" "main" {
     threshold_type = "Actual"
     contact_emails = [var.alert_email]
   }
+}
+
+
+
+
+# =============================================================================
+# CALL THE REGISTRY MODULE
+# =============================================================================
+# This is the module call pattern. We defined the logic in modules/registry,
+# and here we "instantiate" it with Voyager-specific values.
+# If we ever need a second registry (say, for a different region), we'll add
+# another module block with different inputs, thus no need to copy-paste code logic.
+# =============================================================================
+
+module "registry" {
+  source = "../../modules/registry"
+
+  resource_group_name = azurerm_resource_group.shared.name
+  location            = var.location
+  project             = var.project
+  environment         = "shared"
+  sku                 = "Basic"       # Upgrade to Standard in a real prod setup
+
+  untagged_retention_days = 14
+  
+  aks_kubelet_identity_ids = []
+  ci_principal_ids         = []
+}
+
+
+output "acr_id" {
+  value       = module.registry.acr_id
+  description = "Pass this to AKS module in Phase 3 for RBAC wiring."
+}
+
+output "acr_name" {
+  value       = module.registry.acr_name
+}
+
+output "login_server" {
+  value       = module.registry.login_server
+  description = "Use this as the image prefix in your Helm values and CI pipeline."
 }

@@ -4,7 +4,7 @@ This document outlines the system packages, CLIs, and configuration tools you ne
 
 ---
 
-## ☁️ 1. Cloud Provider CLIs
+## 1. Cloud Provider CLIs
 
 Choose the CLI corresponding to the cloud provider you decided to migrate to.
 
@@ -45,7 +45,7 @@ Allows authentication and command-line management of Azure resources (AKS, Azure
 
 ---
 
-## 🏗️ 2. Infrastructure as Code (IaC)
+## 2. Infrastructure as Code (IaC)
 
 ### Terraform
 Required for provisioning all cloud components (VPC, databases, Kubernetes clusters, KMS, IAM).
@@ -67,7 +67,7 @@ Linters and static security code analyzers for Terraform to catch misconfigurati
 
 ---
 
-## ☸️ 3. Kubernetes & GitOps CLIs
+## 3. Kubernetes & GitOps CLIs
 
 ### kubectl
 The command-line tool for controlling Kubernetes clusters.
@@ -105,7 +105,7 @@ Extremely helpful productivity tools for switching between Kubernetes clusters a
 
 ---
 
-## 🔍 4. Troubleshooting, Logs & Monitoring
+## 4. Troubleshooting, Logs & Monitoring
 
 ### k9s
 A terminal UI for interacting with your Kubernetes clusters. Makes it easy to view logs, check pod status, restart deployments, and inspect secrets.
@@ -125,7 +125,7 @@ Allows you to tail multiple containers on Kubernetes and stream their logs in re
 
 ---
 
-## 🐳 5. Containers & CI/CD
+## 5. Containers & CI/CD
 
 ### Docker / Colima
 Required to build your application containers and push them to your private registry.
