@@ -23,6 +23,12 @@ variable "location"            { type = string }
 variable "project"             { type = string }
 variable "environment"         { type = string }
 
+variable "secret_reader_object_ids" {
+  type        = list(string)
+  default     = []
+  description = "Object IDs of managed identities that should have read-only access to Key Vault secrets."
+}
+
 # Get current Azure subscription client config (caller identity details)
 data "azurerm_client_config" "current" {}
 
@@ -49,26 +55,40 @@ resource "azurerm_key_vault" "main" {
 
   sku_name = "standard"
 
-  # Access policy for the current Terraform deployment identity (user or SP)
-  access_policy {
-    tenant_id = data.azurerm_client_config.current.tenant_id
-    object_id = data.azurerm_client_config.current.object_id
 
-    secret_permissions = [
-      "Get",
-      "List",
-      "Set",
-      "Delete",
-      "Purge",
-      "Recover"
-    ]
-  }
 
   tags = {
     project     = var.project
     environment = var.environment
     managed_by  = "terraform"
   }
+}
+
+resource "azurerm_key_vault_access_policy" "deployer" {
+  key_vault_id = azurerm_key_vault.main.id
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  object_id    = data.azurerm_client_config.current.object_id
+
+  secret_permissions = [
+    "Get",
+    "List",
+    "Set",
+    "Delete",
+    "Purge",
+    "Recover"
+  ]
+}
+
+resource "azurerm_key_vault_access_policy" "readers" {
+  for_each     = toset(var.secret_reader_object_ids)
+  key_vault_id = azurerm_key_vault.main.id
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  object_id    = each.value
+
+  secret_permissions = [
+    "Get",
+    "List"
+  ]
 }
 
 # -----------------------------------------------------------------------------
