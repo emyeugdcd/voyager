@@ -7,11 +7,13 @@ loki:
   # Storage configuration for Azure Blob Storage using Workload Identity
   storage:
     type: azure
+    bucketNames:
+      chunks: loki-logs
+      ruler: loki-logs
     azure:
-      container_name: loki-logs
-      account_name: "voyagerlokitestd0455856"
+      accountName: "voyagerlokitestd0455856"
       # Set to true to authenticate using federated credentials (Workload Identity token exchange)
-      use_federated_token: true
+      useFederatedToken: true
 
   schemaConfig:
     configs:
