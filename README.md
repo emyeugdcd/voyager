@@ -311,17 +311,7 @@ Three Grafana dashboards are provisioned automatically:
 Prometheus alerting rules fire to a configured webhook (Slack/Discord) on: pod crash-looping, node memory pressure, database disk above 80%, and ArgoCD sync failures.
  
 Log retention: 1 month for metrics, 1 year for logs (stored in Azure Blob with lifecycle policy).
- 
----
- 
-## Disaster Recovery
- 
-Two runbooks are maintained in [`docs/runbooks/`](docs/runbooks/):
- 
-**Rollback:** Deploy a broken image → ArgoCD detects health check failure → trigger rollback via ArgoCD CLI or UI → previous ReplicaSet restored. Full procedure in [`docs/runbooks/rollback.md`](docs/runbooks/rollback.md).
- 
-**PITR Recovery:** Simulate database failure → restore PostgreSQL Flexible Server to a point-in-time snapshot → reconnect application via updated Key Vault secret → ESO propagates updated credentials to pods without redeployment. Full procedure in [`docs/runbooks/pitr-recovery.md`](docs/runbooks/pitr-recovery.md).
- 
+
 ---
  
 ## Teardown
