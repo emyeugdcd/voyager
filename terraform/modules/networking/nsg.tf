@@ -52,6 +52,18 @@ resource "azurerm_network_security_group" "nodes" {
   }
 
   security_rule {
+    name                       = "allow-http-https-inbound"
+    priority                   = 120
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_ranges    = ["80", "443", "30000-32767"]
+    source_address_prefix      = "Internet"
+    destination_address_prefix = "*"
+  }
+
+  security_rule {
     name                       = "deny-internet-inbound"
     priority                   = 4000
     direction                  = "Inbound"
