@@ -6,9 +6,13 @@ image:
 ingress:
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    external-dns.alpha.kubernetes.io/hostname: "frontend.test-public.voyager-cloud.com"
+    external-dns.alpha.kubernetes.io/hostname: "frontend.test-public.voyager-cloud.com,dnstest.test-public.voyager-cloud.com"
   hosts:
     - host: frontend.test-public.voyager-cloud.com
+      paths:
+        - path: /
+          pathType: Prefix
+    - host: dnstest.test-public.voyager-cloud.com
       paths:
         - path: /
           pathType: Prefix
@@ -16,3 +20,4 @@ ingress:
     - secretName: frontend-tls
       hosts:
         - frontend.test-public.voyager-cloud.com
+        - dnstest.test-public.voyager-cloud.com
