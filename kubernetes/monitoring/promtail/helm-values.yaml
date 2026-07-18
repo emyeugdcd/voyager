@@ -1,0 +1,8 @@
+# Promtail configuration to ship cluster logs to Loki
+config:
+  clients:
+    - url: http://loki-gateway.monitoring.svc.cluster.local/loki/api/v1/push
+
+# Ensure Promtail pods run on node pool nodes
+nodeSelector: {}
+tolerations: []
