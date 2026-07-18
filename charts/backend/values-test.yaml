@@ -21,3 +21,6 @@ database:
   # Hostname of the test PostgreSQL server
   host: "voyager-test-pg.postgres.database.azure.com"
   name: "sampleapp"
+
+config:
+  clientUrl: "https://frontend.test-public.voyager-cloud.com"

@@ -39,7 +39,7 @@ spec:
                   name: backend-db-credentials
                   key: db-password
             - name: CLIENT_URL
-              value: "http://localhost:3000"
+              value: "{{ .Values.config.clientUrl | default "http://localhost:3000" }}"
             - name: RUN_MIGRATION
               value: "true"
           resources:

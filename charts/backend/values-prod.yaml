@@ -21,3 +21,6 @@ database:
   # Hostname of the prod PostgreSQL server
   host: "voyager-prod-db.postgres.database.azure.com"
   name: "sampleapp"
+
+config:
+  clientUrl: "https://frontend.prod-public.voyager-cloud.com"
