@@ -16,3 +16,6 @@ ingress:
     - secretName: frontend-tls
       hosts:
         - frontend.prod-public.voyager-cloud.com
+
+config:
+  apiUrl: "https://backend.prod-public.voyager-cloud.com"

@@ -28,6 +28,18 @@ spec:
             requests:
               cpu: 100m
               memory: 128Mi
+          {{- if .Values.config.apiUrl }}
+          volumeMounts:
+            - name: config-volume
+              mountPath: /usr/share/nginx/html/config.js
+              subPath: config.js
+          {{- end }}
+      {{- if .Values.config.apiUrl }}
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ include "frontend.fullname" . }}-config
+      {{- end }}
       nodeSelector:
         {{- toYaml .Values.nodeSelector | nindent 8 }}
       {{- with .Values.tolerations }}
