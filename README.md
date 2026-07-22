@@ -1,7 +1,8 @@
-# Voyager 
-### Production-Grade Cloud Infrastructure on Azure 
-
-Voyager migrates an application stack (React frontend, Go backend, PostgreSQL) to a secure, private cloud environment on Microsoft Azure. Built as the capstone of an 8-project DevOps module, it represents a complete infrastructure-as-code implementation covering networking, Kubernetes, GitOps delivery, secrets management, observability, and CI/CD.
+<div align="center">
+  <h1>Voyager</h1>
+  <p><strong>A scrub nurse running on Cloud: Chapter 8 of 8. Voyager migrates an application stack (React frontend, Go backend, PostgreSQL) to a secure, private cloud environment on Microsoft Azure. Built as the capstone of an 8-project DevOps module, it represents a complete infrastructure-as-code implementation covering networking, Kubernetes, GitOps delivery, secrets management, observability, and CI/CD.
+</strong></p>
+</div>
 
 ---
 
